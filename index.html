@@ -497,7 +497,7 @@
           <button type="button" id="previewBtn">プレビューを表示</button>
           <button type="button" id="saveBtn" class="secondary">保存</button>
         </div>
-        <div class="preview-note muted">同じ画面の下に請求書プレビューを表示します．保存はブラウザの保存／共有UIを使います．</div>
+        <div class="preview-note muted">同じ画面の下に請求書プレビューを表示します．保存はPDF化後に印刷ダイアログを開きます（ローカルファイルとして開いた場合は従来の印刷を使います）．</div>
         <div id="previewWrap" class="preview-shell hidden">
           <div id="invoicePage" class="a4-page">
             <div class="invoice-top">
@@ -807,10 +807,74 @@
         els.previewWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
 
-      els.saveBtn.addEventListener('click', () => {
+      els.saveBtn.addEventListener('click', async () => {
         renderPreview();
         els.previewWrap.classList.remove('hidden');
-        window.print();
+
+        // file:// 直開きなど API に届かない場合は従来の印刷へフォールバック
+        if (window.location.protocol === 'file:') {
+          window.print();
+          return;
+        }
+
+        const styleText = document.querySelector('style')?.textContent || '';
+        const pageHtml = els.invoicePage.outerHTML;
+        const printableHtml = `<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>invoice-print</title>
+  <style>${styleText}</style>
+</head>
+<body>
+  ${pageHtml}
+</body>
+</html>`;
+
+        const originalText = els.saveBtn.textContent;
+        els.saveBtn.disabled = true;
+        els.saveBtn.textContent = 'PDF生成中...';
+
+        try {
+          const response = await fetch('/api/render-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html: printableHtml }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`PDF生成に失敗しました (${response.status})`);
+          }
+
+          const pdfBlob = await response.blob();
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          const iframe = document.createElement('iframe');
+          iframe.style.position = 'fixed';
+          iframe.style.right = '0';
+          iframe.style.bottom = '0';
+          iframe.style.width = '0';
+          iframe.style.height = '0';
+          iframe.style.border = '0';
+
+          iframe.onload = () => {
+            iframe.contentWindow?.focus();
+            iframe.contentWindow?.print();
+            setTimeout(() => {
+              URL.revokeObjectURL(pdfUrl);
+              iframe.remove();
+            }, 30000);
+          };
+
+          iframe.src = pdfUrl;
+          document.body.appendChild(iframe);
+        } catch (error) {
+          console.error(error);
+          alert('PDF生成に失敗したため、ブラウザ印刷を実行します。');
+          window.print();
+        } finally {
+          els.saveBtn.disabled = false;
+          els.saveBtn.textContent = originalText;
+        }
       });
     }
 
