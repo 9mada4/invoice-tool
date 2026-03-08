@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>請求書フォーム</title>
+  <style>
+    :root {
+      --page-width: 210mm;
+      --page-height: 297mm;
+      --accent: #1f3c88;
+      --line: #333;
+      --soft: #f5f7fb;
+      --danger: #c0392b;
+      --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: #111;
+      background: #eef2f7;
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 24px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(320px, 430px) 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel, .preview-panel {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap: 12px;
+    }
+
+    .field, .field-full {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .field-full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, textarea, button {
+      font: inherit;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cfd7e6;
+      border-radius: 10px;
+      background: #fff;
+      min-width: 0;
+    }
+
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    input[readonly] {
+      background: #f2f4f8;
+    }
+
+    .row-actions, .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      background: #1f3c88;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    button.secondary { background: #6b7280; }
+    button.warn { background: var(--danger); }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .items-table th,
+    .items-table td {
+      border: 1px solid #d7dce5;
+      padding: 6px;
+      vertical-align: middle;
+    }
+
+    .items-table input {
+      border-radius: 6px;
+      padding: 8px;
+      border: 1px solid #d0d7e3;
+      min-width: 0;
+    }
+
+    .items-table th {
+      background: var(--soft);
+    }
+
+    .items-table .num {
+      text-align: right;
+    }
+
+    .notice {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .warning {
+      margin-top: 10px;
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 700;
+      min-height: 1.3em;
+    }
+
+    .preview-panel {
+      padding: 16px;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .preview-shell {
+      overflow: auto;
+      background: #dde4ef;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .a4-page {
+      width: var(--page-width);
+      min-height: var(--page-height);
+      margin: 0 auto;
+      background: #fff;
+      color: #111;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.16);
+      padding: 14mm 14mm 12mm;
+      position: relative;
+    }
+
+    .invoice-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 10mm;
+    }
+
+    .issuer-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .invoice-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-align: right;
+      margin-bottom: 8px;
+    }
+
+    .meta-table, .summary-table, .preview-items {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .meta-table td {
+      padding: 4px 0 4px 8px;
+      font-size: 13px;
+    }
+
+    .meta-label {
+      width: 90px;
+      color: #444;
+      white-space: nowrap;
+    }
+
+    .bill-to {
+      margin-bottom: 6mm;
+      border-bottom: 2px solid #222;
+      padding-bottom: 4mm;
+      font-size: 20px;
+      font-weight: 700;
+      min-height: 14mm;
+    }
+
+    .lead {
+      margin: 0 0 6mm;
+      font-size: 14px;
+    }
+
+    .preview-items th, .preview-items td,
+    .summary-table th, .summary-table td {
+      border: 1px solid #333;
+      padding: 8px;
+      font-size: 13px;
+    }
+
+    .preview-items th, .summary-table th {
+      background: #f2f2f2;
+    }
+
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+
+    .summary-wrap {
+      display: grid;
+      grid-template-columns: 1fr 72mm;
+      gap: 8mm;
+      margin-top: 6mm;
+      align-items: start;
+    }
+
+    .notes {
+      border: 1px solid #333;
+      min-height: 44mm;
+      padding: 8px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .amount-box {
+      margin-top: 6mm;
+      border: 2px solid #111;
+      padding: 10px 12px;
+      font-size: 24px;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .bank,
+    .issuer-info {
+      margin-top: 6mm;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .muted { color: #666; }
+    .hidden { display: none; }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .preview-shell { padding: 10px; }
+      .a4-page {
+        width: 100%;
+        min-height: auto;
+        padding: 16px;
+      }
+      .invoice-top,
+      .summary-wrap {
+        grid-template-columns: 1fr;
+        display: block;
+      }
+      .invoice-title { text-align: left; letter-spacing: 0.08em; font-size: 24px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .wrap > h1,
+      .panel,
+      .preview-actions,
+      .preview-note {
+        display: none !important;
+      }
+      .wrap,
+      .preview-panel,
+      .preview-shell {
+        margin: 0;
+        padding: 0;
+        max-width: none;
+        box-shadow: none;
+        background: #fff;
+      }
+      .a4-page {
+        box-shadow: none;
+        width: 210mm;
+        min-height: 297mm;
+        padding: 14mm 14mm 12mm;
+      }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="ios-htmlviewer-notice" style="margin-bottom:16px;padding:12px 14px;border:1px solid #d0d7de;border-radius:8px;background:#fff8e1;color:#333;font-size:14px;line-height:1.6;">
+  <strong>iPhoneで利用する場合：</strong>
+  このHTMLは Safari では正常に開けないことがあります。iPhoneでは <strong>HTML Viewer</strong> アプリなどで開いてください。
+  </div>
+  <div class="wrap">
+    <h1>請求書フォーム</h1>
+
+    <div class="app">
+      <section class="panel">
+        <div class="panel-head">入力</div>
+        <div class="panel-body">
+          <div>
+            <div class="field">
+              <label for="invoiceNo">請求書番号</label>
+              <input id="invoiceNo" type="text" placeholder="例：2026-001" />
+            </div>
+            <div class="field">
+              <label for="invoiceDate">請求日</label>
+              <input id="invoiceDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="dueDate">支払期限</label>
+              <input id="dueDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="taxRate">税率（%）</label>
+              <input id="taxRate" type="number" step="0.1" min="0" value="10" />
+            </div>
+            <div class="field-full">
+              <label for="billTo">請求先</label>
+              <input id="billTo" type="text" placeholder="例：株式会社〇〇 御中" />
+            </div>
+            <div class="field-full">
+              <label for="subject">件名</label>
+              <input id="subject" type="text" placeholder="例：予約メール管理ツール制作費" />
+            </div>
+          </div>
+
+          <div class="field-full">
+            <label>明細</label>
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th style="width:44%">摘要</th>
+                  <th style="width:12%">数量</th>
+                  <th style="width:18%">単価</th>
+                  <th style="width:18%">金額</th>
+                  <th style="width:8%">削除</th>
+                </tr>
+              </thead>
+              <tbody id="itemsBody"></tbody>
+            </table>
+            <div class="row-actions">
+              <button type="button" id="addRowBtn">行を追加</button>
+            </div>
+            <div class="notice">数量・単価・税率を変えると自動再計算されます．金額欄は手動修正もできますが，次の入力時に上書きされます．</div>
+            <div id="rowWarning" class="warning"></div>
+          </div>
+
+          <div>
+            <div class="field">
+              <label for="subtotal">小計</label>
+              <input id="subtotal" type="text" inputmode="decimal" />
+            </div>
+            <div class="field">
+              <label for="taxAmount">消費税</label>
+              <input id="taxAmount" type="text" inputmode="decimal" />
+            </div>
+            <div class="field">
+              <label for="total">合計</label>
+              <input id="total" type="text" inputmode="decimal" />
+            </div>
+          </div>
+
+          <div class="field-full">
+            <label for="notes">備考</label>
+            <textarea id="notes" placeholder="例：振込手数料は貴社にてご負担願います．"></textarea>
+          </div>
+
+          <div class="field-full">
+            <label for="bankInfo">振込先</label>
+            <textarea id="bankInfo" placeholder="例：ゆうちょ銀行 〇〇〇支店&#10;普通預金 1234567&#10;ミョウジ ナマエ"></textarea>
+          </div>
+
+          <div class="field-full">
+            <label for="issuerInfo">発行者情報</label>
+            <textarea id="issuerInfo" placeholder="例：苗字　名前&#10;〒×××-×××× 東京都〇〇区〇〇&#10;TEL：090-xxxx-xxxx"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-panel">
+        <div class="preview-actions">
+          <button type="button" id="previewBtn">プレビューを表示</button>
+          <button type="button" id="saveBtn" class="secondary">保存</button>
+        </div>
+        <div class="preview-note muted">同じ画面の下に請求書プレビューを表示します．保存はブラウザの保存／共有UIを使います．</div>
+        <div id="previewWrap" class="preview-shell hidden">
+          <div id="invoicePage" class="a4-page">
+            <div class="invoice-top">
+              <div>
+                <div class="issuer-name" id="pvIssuerName">発行者名</div>
+                <div class="issuer-info" id="pvIssuerInfo"></div>
+              </div>
+              <div>
+                <div class="invoice-title">請 求 書</div>
+                <table class="meta-table">
+                  <tr><td class="meta-label">番号：</td><td id="pvInvoiceNo"></td></tr>
+                  <tr><td class="meta-label">請求日：</td><td id="pvInvoiceDate"></td></tr>
+                  <tr><td class="meta-label">支払期限：</td><td id="pvDueDate"></td></tr>
+                  <tr><td class="meta-label">税率：</td><td id="pvTaxRate"></td></tr>
+                </table>
+              </div>
+            </div>
+
+            <div class="bill-to" id="pvBillTo"></div>
+            <p class="lead">下記の通り，ご請求申し上げます．</p>
+
+            <div style="margin-bottom: 4mm; font-size: 14px;"><strong>件名：</strong><span id="pvSubject"></span></div>
+
+            <table class="preview-items">
+              <thead>
+                <tr>
+                  <th>摘要</th>
+                  <th class="text-center">数量</th>
+                  <th class="text-right">単価</th>
+                  <th class="text-right">金額</th>
+                </tr>
+              </thead>
+              <tbody id="pvItemsBody"></tbody>
+            </table>
+
+            <div class="summary-wrap">
+              <div>
+                <div style="font-weight:700; margin-bottom: 4px;">備考</div>
+                <div class="notes" id="pvNotes"></div>
+                <div class="bank">
+                  <div style="font-weight:700; margin-bottom:4px;">振込先</div>
+                  <div id="pvBankInfo"></div>
+                </div>
+              </div>
+
+              <div>
+                <table class="summary-table">
+                  <tr><th>小計</th><td class="text-right" id="pvSubtotal"></td></tr>
+                  <tr><th>消費税</th><td class="text-right" id="pvTaxAmount"></td></tr>
+                  <tr><th>合計</th><td class="text-right" id="pvTotal"></td></tr>
+                </table>
+                <div class="amount-box" id="pvGrand">¥0（税込）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const els = {
+      invoiceNo: document.getElementById('invoiceNo'),
+      invoiceDate: document.getElementById('invoiceDate'),
+      dueDate: document.getElementById('dueDate'),
+      taxRate: document.getElementById('taxRate'),
+      billTo: document.getElementById('billTo'),
+      subject: document.getElementById('subject'),
+      subtotal: document.getElementById('subtotal'),
+      taxAmount: document.getElementById('taxAmount'),
+      total: document.getElementById('total'),
+      notes: document.getElementById('notes'),
+      bankInfo: document.getElementById('bankInfo'),
+      issuerInfo: document.getElementById('issuerInfo'),
+      itemsBody: document.getElementById('itemsBody'),
+      addRowBtn: document.getElementById('addRowBtn'),
+      rowWarning: document.getElementById('rowWarning'),
+      previewWrap: document.getElementById('previewWrap'),
+      previewBtn: document.getElementById('previewBtn'),
+      saveBtn: document.getElementById('saveBtn'),
+      invoicePage: document.getElementById('invoicePage'),
+    };
+
+    const state = {
+      rowId: 0,
+    };
+
+    const yen = new Intl.NumberFormat('ja-JP');
+
+    function sanitizeLineBreaks(value) {
+      return String(value ?? '').replace(/[\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    }
+
+    function sanitizeNumeric(value) {
+      const cleaned = String(value ?? '').replace(/,/g, '').replace(/[^0-9.-]/g, '');
+      return cleaned === '' || cleaned === '-' || cleaned === '.' ? '' : cleaned;
+    }
+
+    function toNumber(value) {
+      const num = parseFloat(sanitizeNumeric(value));
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function formatYen(value) {
+      return '¥' + yen.format(Math.round(Number(value || 0)));
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      const d = new Date(value + 'T00:00:00');
+      if (Number.isNaN(d.getTime())) return value;
+      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    }
+
+    function createRow(data = {}) {
+      state.rowId += 1;
+      const tr = document.createElement('tr');
+      tr.dataset.rowId = state.rowId;
+      tr.innerHTML = `
+        <td><input type="text" class="item-desc" placeholder="摘要" value="${escapeHtml(data.desc || '')}"></td>
+        <td><input type="text" class="item-qty num auto-calc" inputmode="decimal" placeholder="0" value="${escapeHtml(data.qty || '')}"></td>
+        <td><input type="text" class="item-price num auto-calc" inputmode="decimal" placeholder="0" value="${escapeHtml(data.price || '')}"></td>
+        <td><input type="text" class="item-amount num" inputmode="decimal" placeholder="0" value="${escapeHtml(data.amount || '')}"></td>
+        <td class="text-center"><button type="button" class="warn delete-row">×</button></td>
+      `;
+      els.itemsBody.appendChild(tr);
+      bindRowEvents(tr);
+      recalcAndRender();
+      return tr;
+    }
+
+    function bindRowEvents(tr) {
+      tr.querySelectorAll('input').forEach((input) => {
+        input.addEventListener('input', (e) => {
+          if (input.classList.contains('auto-calc')) {
+            recalcAndRender();
+          } else {
+            sanitizeInput(e.target);
+            renderPreview();
+          }
+        });
+        input.addEventListener('change', (e) => {
+          sanitizeInput(e.target);
+          if (input.classList.contains('auto-calc')) {
+            recalcAndRender();
+          } else {
+            renderPreview();
+          }
+        });
+      });
+      tr.querySelector('.delete-row').addEventListener('click', () => {
+        tr.remove();
+        if (!els.itemsBody.children.length) createRow();
+        recalcAndRender();
+      });
+    }
+
+    function sanitizeInput(input) {
+      if (!input) return;
+      if (input.type === 'text' && !input.classList.contains('num')) {
+        input.value = sanitizeLineBreaks(input.value);
+      }
+      if (input.classList.contains('num')) {
+        input.value = sanitizeNumeric(input.value);
+      }
+    }
+
+    function getRows() {
+      return [...els.itemsBody.querySelectorAll('tr')].map((tr) => ({
+        desc: sanitizeLineBreaks(tr.querySelector('.item-desc').value),
+        qtyEl: tr.querySelector('.item-qty'),
+        priceEl: tr.querySelector('.item-price'),
+        amountEl: tr.querySelector('.item-amount'),
+      }));
+    }
+
+    function recalcAndRender() {
+      const rows = getRows();
+      let subtotal = 0;
+      rows.forEach((row) => {
+        row.qtyEl.value = sanitizeNumeric(row.qtyEl.value);
+        row.priceEl.value = sanitizeNumeric(row.priceEl.value);
+        const amount = toNumber(row.qtyEl.value) * toNumber(row.priceEl.value);
+        row.amountEl.value = amount ? String(Math.round(amount)) : '';
+        subtotal += amount;
+      });
+
+      const taxRate = toNumber(els.taxRate.value);
+      const taxAmount = Math.round(subtotal * taxRate / 100);
+      const total = Math.round(subtotal + taxAmount);
+
+      els.subtotal.value = subtotal ? String(Math.round(subtotal)) : '';
+      els.taxAmount.value = taxAmount ? String(taxAmount) : '';
+      els.total.value = total ? String(total) : '';
+
+      renderPreview();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function setText(id, text) {
+      document.getElementById(id).textContent = text || '';
+    }
+
+    function setMultiline(id, text) {
+      const el = document.getElementById(id);
+      el.textContent = text || '';
+    }
+
+    function renderPreview() {
+      // sanitize base inputs
+      [els.invoiceNo, els.billTo, els.subject].forEach((el) => el.value = sanitizeLineBreaks(el.value));
+      [els.notes, els.bankInfo, els.issuerInfo].forEach((el) => el.value = sanitizeLineBreaks(el.value));
+      [els.taxRate, els.subtotal, els.taxAmount, els.total].forEach((el) => el.value = sanitizeNumeric(el.value));
+
+      setText('pvInvoiceNo', els.invoiceNo.value);
+      setText('pvInvoiceDate', formatDate(els.invoiceDate.value));
+      setText('pvDueDate', formatDate(els.dueDate.value));
+      setText('pvTaxRate', els.taxRate.value ? `${els.taxRate.value}%` : '');
+      setText('pvBillTo', els.billTo.value);
+      setText('pvSubject', els.subject.value);
+      setMultiline('pvNotes', els.notes.value);
+      setMultiline('pvBankInfo', els.bankInfo.value);
+      setMultiline('pvIssuerInfo', els.issuerInfo.value);
+
+      const issuerFirstLine = els.issuerInfo.value.split(' ').filter(Boolean)[0] || els.issuerInfo.value || '発行者名';
+      setText('pvIssuerName', issuerFirstLine);
+
+      const pvItemsBody = document.getElementById('pvItemsBody');
+      pvItemsBody.innerHTML = '';
+      getRows().forEach((row) => {
+        const qty = sanitizeNumeric(row.qtyEl.value);
+        const price = sanitizeNumeric(row.priceEl.value);
+        const amount = sanitizeNumeric(row.amountEl.value);
+        if (!row.desc && !qty && !price && !amount) return;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(row.desc)}</td>
+          <td class="text-center">${escapeHtml(qty)}</td>
+          <td class="text-right">${price ? formatYen(price) : ''}</td>
+          <td class="text-right">${amount ? formatYen(amount) : ''}</td>
+        `;
+        pvItemsBody.appendChild(tr);
+      });
+
+      if (!pvItemsBody.children.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td style="height: 28px"></td><td></td><td></td><td></td>';
+        pvItemsBody.appendChild(tr);
+      }
+
+      const subtotal = toNumber(els.subtotal.value);
+      const taxAmount = toNumber(els.taxAmount.value);
+      const total = toNumber(els.total.value);
+      setText('pvSubtotal', formatYen(subtotal));
+      setText('pvTaxAmount', formatYen(taxAmount));
+      setText('pvTotal', formatYen(total));
+      setText('pvGrand', `${formatYen(total)}（税込）`);
+    }
+
+    function tryAddRow() {
+      els.rowWarning.textContent = '';
+      const tr = createRow();
+      renderPreview();
+      const page = els.invoicePage;
+      const overflow = page.scrollHeight > page.clientHeight + 2;
+      if (overflow) {
+        tr.remove();
+        recalcAndRender();
+        els.rowWarning.textContent = 'この行を追加すると1ページに収まりません．';
+      }
+    }
+
+    function initBaseEvents() {
+      [els.invoiceNo, els.billTo, els.subject, els.notes, els.bankInfo, els.issuerInfo].forEach((el) => {
+        el.addEventListener('input', () => {
+          el.value = sanitizeLineBreaks(el.value);
+          renderPreview();
+        });
+      });
+
+      [els.invoiceDate, els.dueDate].forEach((el) => el.addEventListener('input', renderPreview));
+
+      [els.taxRate].forEach((el) => el.addEventListener('input', () => {
+        el.value = sanitizeNumeric(el.value);
+        recalcAndRender();
+      }));
+
+      [els.subtotal, els.taxAmount, els.total].forEach((el) => {
+        el.addEventListener('input', () => {
+          el.value = sanitizeNumeric(el.value);
+          renderPreview();
+        });
+      });
+
+      els.addRowBtn.addEventListener('click', tryAddRow);
+      els.previewBtn.addEventListener('click', () => {
+        renderPreview();
+        els.previewWrap.classList.remove('hidden');
+        els.previewWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      els.saveBtn.addEventListener('click', () => {
+        renderPreview();
+        els.previewWrap.classList.remove('hidden');
+        const name = prompt('保存時のファイル名を入力してください', document.title.replace(/\.pdf$/i, ''));
+        if (name !== null && name.trim()) {
+          document.title = name.trim().endsWith('.pdf') ? name.trim() : `${name.trim()}.pdf`;
+        }
+        window.print();
+      });
+    }
+
+    // initial rows
+    createRow({ desc: 'アプリ制作費', qty: '1', price: '60000' });
+    initBaseEvents();
+    els.previewWrap.classList.remove('hidden');
+    recalcAndRender();
+  </script>
+</body>
+</html>
