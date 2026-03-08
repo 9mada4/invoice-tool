@@ -323,79 +323,40 @@
     }
 
     @media print {
-      @page {
-        size: A4;
-        margin: 0;
-      }
-    
-      html, body {
-        height: 297mm;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: #fff;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-    
-      #ios-htmlviewer-notice,
-      .wrap > h1,
-      .panel,
-      .preview-actions,
-      .preview-note {
+      /* 画面上のボタン類を確実に消す */
+      .no-print, button, #add-item-btn {
         display: none !important;
       }
-    
-      .wrap,
-      .preview-panel,
-      .preview-shell {
-        margin: 0;
-        padding: 0;
-        max-width: none;
-        box-shadow: none;
-        background: #fff;
+
+      /* 用紙設定: 余白を最小限にする */
+      @page {
+        size: A4;
+        margin: 10mm;
       }
-    
-      .preview-shell {
-        overflow: hidden;
-        border-radius: 0;
+
+      body {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        /* Safari対策: 全体を5%縮小して「安全圏」に収める */
+        transform: scale(0.95);
+        transform-origin: top center;
+        background: none !important;
       }
-    
-      .preview-panel {
-        border-radius: 0;
+
+      .container {
+        width: 100% !important;
+        max-width: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
-    
-      .a4-page {
-        box-shadow: none;
-        margin: 0;
-        width: 210mm;
-        height: 296mm;
-        padding: 10mm 12mm;
-        box-sizing: border-box;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        page-break-after: always;
-      }
-    
-      .preview-items {
-        border-collapse: collapse;
-      }
-    
-      .preview-items tr {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-    
-      .summary-wrap {
-        flex: 1;
-        min-height: 0;
-      }
-    
-      .notes {
-        max-height: 35mm;
-        overflow: hidden;
+
+      /* テーブルが横に突き抜けるのを防ぐ */
+      table {
+        width: 100% !important;
+        table-layout: fixed; /* 列幅を固定してはみ出しを抑止 */
+        word-wrap: break-word;
       }
     }
   </style>
