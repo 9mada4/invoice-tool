@@ -183,13 +183,17 @@
     }
 
     .a4-page {
-      width: var(--page-width);
-      min-height: var(--page-height);
+      width: 210mm;
+      height: 296mm;
       margin: 0 auto;
       background: #fff;
       color: #111;
       box-shadow: 0 4px 18px rgba(0,0,0,0.16);
-      padding: 10mm;
+      padding: 10mm 12mm;
+      box-sizing: border-box;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
       position: relative;
     }
 
