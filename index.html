@@ -327,25 +327,25 @@
         size: A4;
         margin: 0;
       }
-    
+
       html, body {
-        height: 297mm;
         margin: 0;
         padding: 0;
-        overflow: hidden;
         background: #fff;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-    
+
       #ios-htmlviewer-notice,
       .wrap > h1,
       .panel,
       .preview-actions,
-      .preview-note {
+      .preview-note,
+      .notice,
+      .warning {
         display: none !important;
       }
-    
+
       .wrap,
       .preview-panel,
       .preview-shell {
@@ -355,47 +355,54 @@
         box-shadow: none;
         background: #fff;
       }
-    
+
       .preview-shell {
-        overflow: hidden;
+        overflow: visible;
         border-radius: 0;
       }
-    
+
       .preview-panel {
         border-radius: 0;
       }
-    
+
       .a4-page {
         box-shadow: none;
-        margin: 0;
-        width: 210mm;
-        height: 296mm;
-        padding: 10mm 12mm;
+        margin: 0 auto;
+        width: 194mm;
+        min-height: 270mm;
+        padding: 8mm 10mm;
         box-sizing: border-box;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        position: relative;
-        page-break-after: always;
+        background: #fff;
       }
-    
+
       .preview-items {
         border-collapse: collapse;
       }
-    
-      .preview-items tr {
+
+      .preview-items tr,
+      .summary-table tr {
         page-break-inside: avoid;
         break-inside: avoid;
       }
-    
+
       .summary-wrap {
         flex: 1;
         min-height: 0;
       }
-    
-      .notes {
-        max-height: 35mm;
+
+      .notes,
+      .bank,
+      .issuer-info {
         overflow: hidden;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .notes {
+        max-height: 32mm;
       }
     }
   </style>
