@@ -323,7 +323,21 @@
     }
 
     @media print {
-      body { background: #fff; }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+    
+      html, body {
+        height: 297mm;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #fff;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    
       #ios-htmlviewer-notice,
       .wrap > h1,
       .panel,
@@ -331,6 +345,7 @@
       .preview-note {
         display: none !important;
       }
+    
       .wrap,
       .preview-panel,
       .preview-shell {
@@ -340,23 +355,47 @@
         box-shadow: none;
         background: #fff;
       }
+    
+      .preview-shell {
+        overflow: hidden;
+        border-radius: 0;
+      }
+    
       .preview-panel {
         border-radius: 0;
       }
-      .preview-shell {
-        overflow: visible;
-        border-radius: 0;
-        background: #fff;
-      }
+    
       .a4-page {
         box-shadow: none;
         margin: 0;
-        page-break-inside: avoid;
-        break-inside: avoid-page;
+        width: 210mm;
+        height: 296mm;
+        padding: 10mm 12mm;
+        box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        page-break-after: always;
       }
-      @page {
-        size: A4;
-        margin: 0;
+    
+      .preview-items {
+        border-collapse: collapse;
+      }
+    
+      .preview-items tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+    
+      .summary-wrap {
+        flex: 1;
+        min-height: 0;
+      }
+    
+      .notes {
+        max-height: 35mm;
+        overflow: hidden;
       }
     }
   </style>
