@@ -331,9 +331,14 @@
       }
       .a4-page {
         box-shadow: none;
-        width: 210mm;
-        min-height: 297mm;
-        padding: 14mm 14mm 12mm;
+        width: auto;
+        min-height: auto;
+        padding: 10mm;
+        page-break-inside: avoid;
+        break-inside: avoid-page;
+      }
+      .preview-shell {
+        overflow: visible;
       }
       @page {
         size: A4;
