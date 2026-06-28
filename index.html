@@ -79,11 +79,11 @@
       font-weight: 700;
     }
 
-    input, textarea, button {
+    input, textarea, select, button {
       font: inherit;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid #cfd7e6;
@@ -99,6 +99,49 @@
 
     input[readonly] {
       background: #f2f4f8;
+    }
+
+    .date-parts {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 0.7fr) auto minmax(0, 0.7fr);
+      gap: 6px;
+      align-items: center;
+    }
+
+    .date-parts input {
+      text-align: center;
+    }
+
+    .date-separator {
+      color: #555;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .assist-section {
+      border: 1px solid #d7dce5;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #f8fafc;
+    }
+
+    .assist-title {
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #344054;
+    }
+
+    .assist-grid {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap: 10px;
+    }
+
+    .assist-grid .field,
+    .assist-grid .field-full {
+      margin-bottom: 0;
     }
 
     .row-actions, .top-actions {
@@ -440,6 +483,7 @@
 
     @media (max-width: 980px) {
       .app { grid-template-columns: 1fr; }
+      .assist-grid { grid-template-columns: 1fr; }
       .preview-shell { padding: 10px; }
       .preview-panel { padding: 10px; }
     }
@@ -538,12 +582,24 @@
               <input id="invoiceNo" type="text" placeholder="例：2026-001" />
             </div>
             <div class="field">
-              <label for="invoiceDate">請求日</label>
-              <input id="invoiceDate" type="date" />
+              <label for="invoiceYear">請求日</label>
+              <div class="date-parts" id="invoiceDate">
+                <input id="invoiceYear" class="date-year" type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="請求日 年" />
+                <span class="date-separator">/</span>
+                <input id="invoiceMonth" class="date-month" type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="請求日 月" />
+                <span class="date-separator">/</span>
+                <input id="invoiceDay" class="date-day" type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="請求日 日" />
+              </div>
             </div>
             <div class="field">
-              <label for="dueDate">支払期限</label>
-              <input id="dueDate" type="date" />
+              <label for="dueYear">支払期限</label>
+              <div class="date-parts" id="dueDate">
+                <input id="dueYear" class="date-year" type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="支払期限 年" />
+                <span class="date-separator">/</span>
+                <input id="dueMonth" class="date-month" type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="支払期限 月" />
+                <span class="date-separator">/</span>
+                <input id="dueDay" class="date-day" type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="支払期限 日" />
+              </div>
             </div>
             <div class="field">
               <label for="taxRate">税率（%）</label>
@@ -601,12 +657,82 @@
           </div>
 
           <div class="field-full">
-            <label for="bankInfo">振込先</label>
+            <label>振込先</label>
+            <div class="assist-section">
+              <div class="assist-title">項目から入力</div>
+              <div class="assist-grid">
+                <div class="field">
+                  <label for="bankNameSelect">銀行名</label>
+                  <select id="bankNameSelect">
+                    <option value="">選択してください</option>
+                    <option value="みずほ銀行">みずほ銀行</option>
+                    <option value="三菱UFJ銀行">三菱UFJ銀行</option>
+                    <option value="三井住友銀行">三井住友銀行</option>
+                    <option value="りそな銀行">りそな銀行</option>
+                    <option value="埼玉りそな銀行">埼玉りそな銀行</option>
+                    <option value="ゆうちょ銀行">ゆうちょ銀行</option>
+                    <option value="PayPay銀行">PayPay銀行</option>
+                    <option value="楽天銀行">楽天銀行</option>
+                    <option value="住信SBIネット銀行">住信SBIネット銀行</option>
+                    <option value="GMOあおぞらネット銀行">GMOあおぞらネット銀行</option>
+                    <option value="other">その他の銀行</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="bankNameOtherField">
+                  <label for="bankNameOther">その他の銀行名</label>
+                  <input id="bankNameOther" type="text" placeholder="銀行名" />
+                </div>
+                <div class="field">
+                  <label for="bankBranch">支店名</label>
+                  <input id="bankBranch" type="text" placeholder="例：本店" />
+                </div>
+                <div class="field">
+                  <label for="accountType">種別</label>
+                  <select id="accountType">
+                    <option value="">選択してください</option>
+                    <option value="普通預金">普通預金</option>
+                    <option value="当座預金">当座預金</option>
+                    <option value="貯蓄預金">貯蓄預金</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="accountNumber">口座番号</label>
+                  <input id="accountNumber" type="text" inputmode="numeric" placeholder="例：1234567" />
+                </div>
+                <div class="field">
+                  <label for="accountName">名義</label>
+                  <input id="accountName" type="text" placeholder="例：ミョウジ ナマエ" />
+                </div>
+              </div>
+            </div>
+            <label for="bankInfo">直接入力・一括ペースト</label>
             <textarea id="bankInfo" placeholder="例：ゆうちょ銀行 〇〇〇支店&#10;普通預金 1234567&#10;ミョウジ ナマエ"></textarea>
           </div>
 
           <div class="field-full">
-            <label for="issuerInfo">発行者情報</label>
+            <label>発行者情報</label>
+            <div class="assist-section">
+              <div class="assist-title">項目から入力</div>
+              <div class="assist-grid">
+                <div class="field">
+                  <label for="issuerNameInput">氏名・会社名</label>
+                  <input id="issuerNameInput" type="text" placeholder="例：坂本 太郎" />
+                </div>
+                <div class="field">
+                  <label for="issuerPostal">郵便番号</label>
+                  <input id="issuerPostal" type="text" inputmode="numeric" maxlength="8" placeholder="例：100-0000" />
+                </div>
+                <div class="field-full">
+                  <label for="issuerAddress">住所</label>
+                  <input id="issuerAddress" type="text" placeholder="例：東京都品川区" />
+                </div>
+                <div class="field">
+                  <label for="issuerPhone">電話番号</label>
+                  <input id="issuerPhone" type="tel" inputmode="tel" placeholder="例：030-0000-0000" />
+                </div>
+              </div>
+            </div>
+            <label for="issuerInfo">直接入力・一括ペースト</label>
             <textarea id="issuerInfo" placeholder="例：苗字　名前&#10;〒×××-×××× 東京都〇〇区〇〇&#10;TEL：090-xxxx-xxxx"></textarea>
           </div>
         </div>
@@ -684,8 +810,12 @@
   <script>
     const els = {
       invoiceNo: document.getElementById('invoiceNo'),
-      invoiceDate: document.getElementById('invoiceDate'),
-      dueDate: document.getElementById('dueDate'),
+      invoiceYear: document.getElementById('invoiceYear'),
+      invoiceMonth: document.getElementById('invoiceMonth'),
+      invoiceDay: document.getElementById('invoiceDay'),
+      dueYear: document.getElementById('dueYear'),
+      dueMonth: document.getElementById('dueMonth'),
+      dueDay: document.getElementById('dueDay'),
       taxRate: document.getElementById('taxRate'),
       billTo: document.getElementById('billTo'),
       subject: document.getElementById('subject'),
@@ -693,7 +823,18 @@
       taxAmount: document.getElementById('taxAmount'),
       total: document.getElementById('total'),
       notes: document.getElementById('notes'),
+      bankNameSelect: document.getElementById('bankNameSelect'),
+      bankNameOtherField: document.getElementById('bankNameOtherField'),
+      bankNameOther: document.getElementById('bankNameOther'),
+      bankBranch: document.getElementById('bankBranch'),
+      accountType: document.getElementById('accountType'),
+      accountNumber: document.getElementById('accountNumber'),
+      accountName: document.getElementById('accountName'),
       bankInfo: document.getElementById('bankInfo'),
+      issuerNameInput: document.getElementById('issuerNameInput'),
+      issuerPostal: document.getElementById('issuerPostal'),
+      issuerAddress: document.getElementById('issuerAddress'),
+      issuerPhone: document.getElementById('issuerPhone'),
       issuerInfo: document.getElementById('issuerInfo'),
       itemsBody: document.getElementById('itemsBody'),
       addRowBtn: document.getElementById('addRowBtn'),
@@ -723,6 +864,10 @@
       return cleaned === '' || cleaned === '-' || cleaned === '.' ? '' : cleaned;
     }
 
+    function sanitizeDigits(value, maxLength = Infinity) {
+      return String(value ?? '').replace(/\D/g, '').slice(0, maxLength);
+    }
+
     function toNumber(value) {
       const num = parseFloat(sanitizeNumeric(value));
       return Number.isFinite(num) ? num : 0;
@@ -736,11 +881,54 @@
       return yen.format(Math.round(Number(value || 0)));
     }
 
-    function formatDate(value) {
-      if (!value) return '';
-      const d = new Date(value + 'T00:00:00');
-      if (Number.isNaN(d.getTime())) return value;
-      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    function formatDateParts(yearEl, monthEl, dayEl) {
+      const year = sanitizeDigits(yearEl.value, 4);
+      const month = sanitizeDigits(monthEl.value, 2);
+      const day = sanitizeDigits(dayEl.value, 2);
+      if (!year && !month && !day) return '';
+      if (year.length === 4 && month && day) {
+        return `${year}年${Number(month)}月${Number(day)}日`;
+      }
+      return [year, month, day].filter(Boolean).join('/');
+    }
+
+    function formatPostal(value) {
+      const digits = sanitizeDigits(value, 7);
+      return digits.length > 3 ? `${digits.slice(0, 3)}-${digits.slice(3)}` : digits;
+    }
+
+    function formatPhone(value) {
+      const digits = sanitizeDigits(value, 11);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      if (digits.length === 10 && (digits.startsWith('03') || digits.startsWith('06'))) {
+        return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+      }
+      if (digits.length <= 10) {
+        return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+      }
+      return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+    }
+
+    function getBankName() {
+      return els.bankNameSelect.value === 'other'
+        ? sanitizeLineBreaks(els.bankNameOther.value)
+        : els.bankNameSelect.value;
+    }
+
+    function composeBankInfo() {
+      const bankLine = [getBankName(), sanitizeLineBreaks(els.bankBranch.value)].filter(Boolean).join(' ');
+      const accountLine = [els.accountType.value, sanitizeDigits(els.accountNumber.value, 12)].filter(Boolean).join(' ');
+      return [bankLine, accountLine, sanitizeLineBreaks(els.accountName.value)].filter(Boolean).join('\n');
+    }
+
+    function composeIssuerInfo() {
+      const name = sanitizeLineBreaks(els.issuerNameInput.value);
+      const postal = formatPostal(els.issuerPostal.value);
+      const address = sanitizeLineBreaks(els.issuerAddress.value);
+      const addressLine = [`〒${postal}`, address].filter((part) => part !== '〒' && part).join(' ');
+      const phone = formatPhone(els.issuerPhone.value);
+      return [name, addressLine, phone ? `TEL：${phone}` : ''].filter(Boolean).join('\n');
     }
 
     function createRow(data = {}) {
@@ -852,8 +1040,8 @@
       [els.taxRate, els.subtotal, els.taxAmount, els.total].forEach((el) => el.value = sanitizeNumeric(el.value));
 
       setText('pvInvoiceNo', els.invoiceNo.value);
-      setText('pvInvoiceDate', formatDate(els.invoiceDate.value));
-      setText('pvDueDate', formatDate(els.dueDate.value));
+      setText('pvInvoiceDate', formatDateParts(els.invoiceYear, els.invoiceMonth, els.invoiceDay));
+      setText('pvDueDate', formatDateParts(els.dueYear, els.dueMonth, els.dueDay));
       setText('pvTaxRate', els.taxRate.value ? `${els.taxRate.value}%` : '');
       setText('pvBillTo', els.billTo.value);
       setText('pvSubject', els.subject.value);
@@ -881,8 +1069,7 @@
         pvItemsBody.appendChild(tr);
       });
 
-      const minimumRows = 12;
-      while (pvItemsBody.children.length < minimumRows) {
+      if (!pvItemsBody.children.length) {
         const tr = document.createElement('tr');
         tr.innerHTML = '<td></td><td></td><td></td><td></td>';
         pvItemsBody.appendChild(tr);
@@ -910,6 +1097,35 @@
       }
     }
 
+    function bindDateParts(yearEl, monthEl, dayEl) {
+      [
+        { el: yearEl, max: 4, next: monthEl },
+        { el: monthEl, max: 2, next: dayEl },
+        { el: dayEl, max: 2, next: null },
+      ].forEach(({ el, max, next }) => {
+        el.addEventListener('input', () => {
+          el.value = sanitizeDigits(el.value, max);
+          if (next && el.value.length === max) next.focus();
+          renderPreview();
+        });
+      });
+    }
+
+    function updateBankInfoFromParts() {
+      const isOtherBank = els.bankNameSelect.value === 'other';
+      els.bankNameOtherField.classList.toggle('hidden', !isOtherBank);
+      els.accountNumber.value = sanitizeDigits(els.accountNumber.value, 12);
+      els.bankInfo.value = composeBankInfo();
+      renderPreview();
+    }
+
+    function updateIssuerInfoFromParts() {
+      els.issuerPostal.value = formatPostal(els.issuerPostal.value);
+      els.issuerPhone.value = formatPhone(els.issuerPhone.value);
+      els.issuerInfo.value = composeIssuerInfo();
+      renderPreview();
+    }
+
     function initBaseEvents() {
       [els.invoiceNo, els.billTo, els.subject].forEach((el) => {
         el.addEventListener('input', () => {
@@ -925,7 +1141,18 @@
         });
       });
 
-      [els.invoiceDate, els.dueDate].forEach((el) => el.addEventListener('input', renderPreview));
+      bindDateParts(els.invoiceYear, els.invoiceMonth, els.invoiceDay);
+      bindDateParts(els.dueYear, els.dueMonth, els.dueDay);
+
+      [els.bankNameSelect, els.bankNameOther, els.bankBranch, els.accountType, els.accountNumber, els.accountName].forEach((el) => {
+        el.addEventListener('input', updateBankInfoFromParts);
+        el.addEventListener('change', updateBankInfoFromParts);
+      });
+
+      [els.issuerNameInput, els.issuerPostal, els.issuerAddress, els.issuerPhone].forEach((el) => {
+        el.addEventListener('input', updateIssuerInfoFromParts);
+        el.addEventListener('change', updateIssuerInfoFromParts);
+      });
 
       [els.taxRate].forEach((el) => el.addEventListener('input', () => {
         el.value = sanitizeNumeric(el.value);
