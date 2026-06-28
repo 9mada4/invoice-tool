@@ -246,7 +246,7 @@
       background: #fff;
       color: #111;
       box-shadow: 0 4px 18px rgba(0,0,0,0.16);
-      padding: 17mm 6.5mm 9mm;
+      padding: 10mm 6.5mm 10mm;
       box-sizing: border-box;
       overflow: hidden;
       display: flex;
@@ -261,7 +261,7 @@
       font-weight: 700;
       letter-spacing: 0.55em;
       text-align: center;
-      margin: 0 0 14mm;
+      margin: 0 0 7mm;
       padding-left: 0.55em;
     }
 
@@ -270,13 +270,13 @@
       grid-template-columns: 1fr 72mm;
       gap: 12mm;
       align-items: end;
-      margin-bottom: 22mm;
+      margin-bottom: 9mm;
     }
 
     .bill-to {
       border-bottom: 1.5px solid #111;
-      min-height: 10mm;
-      padding: 0 4mm 2mm 0;
+      min-height: 7mm;
+      padding: 0 4mm 1mm 0;
       font-size: 20px;
       line-height: 1.25;
       text-align: right;
@@ -293,8 +293,8 @@
     }
 
     .meta-table td {
-      padding: 1.5mm 0 1.5mm 2mm;
-      font-size: 15px;
+      padding: 1mm 0 1mm 2mm;
+      font-size: 14px;
       white-space: nowrap;
     }
 
@@ -308,16 +308,16 @@
       grid-template-columns: 1fr 80mm;
       gap: 12mm;
       align-items: start;
-      margin-bottom: 5mm;
+      margin-bottom: 3mm;
     }
 
     .lead {
       margin: 0 0 1mm 1mm;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .issuer-name {
-      font-size: 19px;
+      font-size: 18px;
       line-height: 1.4;
       margin: 1mm 0 2mm;
       white-space: pre-wrap;
@@ -326,24 +326,24 @@
 
     .issuer-info {
       margin: 0;
-      font-size: 15px;
-      line-height: 1.6;
+      font-size: 14px;
+      line-height: 1.45;
       white-space: pre-wrap;
       word-break: break-word;
       overflow-wrap: anywhere;
     }
 
     .detail-table {
-      margin-bottom: 6mm;
+      margin-bottom: 3mm;
     }
 
     .detail-table th,
     .detail-table td {
       border: 1.2px solid #111;
-      font-size: 14px;
-      line-height: 1.4;
-      min-height: 9mm;
-      padding: 1.5mm 2mm;
+      font-size: 13px;
+      line-height: 1.3;
+      min-height: 7mm;
+      padding: 1mm 2mm;
       vertical-align: middle;
     }
 
@@ -357,7 +357,7 @@
     }
 
     .detail-table .bank-cell {
-      height: 29mm;
+      height: 18mm;
       vertical-align: top;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
@@ -370,7 +370,7 @@
       border: 1.2px solid #111;
       margin: 0;
       padding: 0;
-      min-height: 11mm;
+      min-height: 9mm;
       font-weight: 700;
     }
 
@@ -381,12 +381,12 @@
       justify-content: center;
       background: #d9d9d9;
       border-right: 1.2px solid #111;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .amount-box-total {
       text-align: center;
-      font-size: 20px;
+      font-size: 19px;
     }
 
     .amount-box-tax {
@@ -405,10 +405,10 @@
     .summary-table th,
     .summary-table td {
       border: 1.2px solid #111;
-      padding: 1.3mm 2mm;
-      font-size: 14px;
-      line-height: 1.25;
-      height: 8.7mm;
+      padding: 1mm 2mm;
+      font-size: 13.5px;
+      line-height: 1.2;
+      height: 7mm;
       vertical-align: middle;
     }
 
@@ -429,7 +429,8 @@
       grid-template-columns: 1fr 70mm;
       gap: 6mm;
       align-items: start;
-      margin-top: 5mm;
+      margin-top: 1.5mm;
+      margin-bottom: 2mm;
       margin-left: auto;
       width: 110mm;
     }
@@ -440,7 +441,7 @@
       gap: 7mm;
       justify-content: flex-end;
       font-size: 14px;
-      padding-top: 8mm;
+      padding-top: 4mm;
       white-space: nowrap;
     }
 
@@ -457,32 +458,40 @@
     .summary-table .total-row th,
     .summary-table .total-row td {
       font-weight: 800;
-      font-size: 15px;
+      font-size: 14.5px;
     }
 
     .notes-section {
-      margin-top: auto;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 18mm;
+      height: 18mm;
+      margin-top: 0;
       border: 1.2px solid #111;
-      min-height: 34mm;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .notes-title {
       background: #d9d9d9;
       border-bottom: 1.2px solid #111;
-      min-height: 7mm;
+      flex: 0 0 5mm;
+      min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .notes {
+      flex: 1 1 auto;
       border: 0;
-      min-height: 27mm;
-      padding: 2mm 4mm;
-      font-size: 14px;
-      line-height: 1.5;
+      min-height: 0;
+      padding: 1mm 4mm;
+      font-size: 12.5px;
+      line-height: 1.3;
       white-space: pre-wrap;
       word-break: break-word;
       overflow-wrap: anywhere;
@@ -551,7 +560,7 @@
         margin: 0;
         width: var(--page-width);
         height: var(--page-height);
-        padding: 17mm 6.5mm 9mm;
+        padding: 10mm 6.5mm 10mm;
         box-sizing: border-box;
         overflow: hidden;
         display: flex;
